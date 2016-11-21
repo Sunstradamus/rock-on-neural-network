@@ -30,7 +30,7 @@ def back():
 
 def take_photo():
     # Shitty non blocking timer hack
-    t = threading.Timer(2.0, display_rock)
+    t = threading.Timer(1.5, display_rock)
     t.start()
     if mode == 0:
         start_normal.configure(state=DISABLED)
@@ -48,7 +48,7 @@ def display_rock():
     else:
         unfair_text_label.configure(text="ROCK")
 
-    t = threading.Timer(1.0, display_paper)
+    t = threading.Timer(1.5, display_paper)
     t.start()
 
 def display_paper():
@@ -57,7 +57,7 @@ def display_paper():
     else:
         unfair_text_label.configure(text="PAPER")
 
-    t = threading.Timer(1.0, stop_video)
+    t = threading.Timer(1.5, stop_video)
     t.start()
 
 def stop_video():
@@ -68,29 +68,33 @@ def stop_video():
     class_img = ImageTk.PhotoImage(class_img)
     stop = True
 
+    # Shitty race condition fix for video to stop first
+    time.sleep(0.3)
+
     if mode == 0:
         norm_text_label.configure(text="SCISSORS!")
         norm_main_label.configure(image=class_img)
         norm_main_label.image = class_img
 
-        reset_normal.configure(state=NORMAL)
-        back_normal.configure(state=NORMAL)
     else:
         unfair_text_label.configure(text="SCISSORS!")
         unfair_main_label.configure(image=class_img)
         unfair_main_label.image = class_img
 
-        reset_unfair.configure(state=NORMAL)
-        back_unfair.configure(state=NORMAL)
-
-    t = threading.Timer(2.0, calculate_results)
+    t = threading.Timer(1.5, calculate_results)
     t.start()
 
 def calculate_results():
     if mode == 0:
         norm_text_label.configure(text="Calculating...!")
+
+        reset_normal.configure(state=NORMAL)
+        back_normal.configure(state=NORMAL)
     else:
         unfair_text_label.configure(text="Calculating...!")
+
+        reset_unfair.configure(state=NORMAL)
+        back_unfair.configure(state=NORMAL)
 
     # TODO: Classify last_frame image
 
@@ -136,7 +140,6 @@ def start_unfair_game():
     start_unfair.configure(state=NORMAL)
     back_unfair.configure(state=NORMAL)
     reset_unfair.configure(state=DISABLED)
-
 
     unfair_frame.tkraise()
 
