@@ -37,7 +37,7 @@ x = Dropout(0.5)(x)
 predictions = Dense(N_CLASSES, activation='softmax', name='predictions')(x)
 
 model = Model(input=base_model.input, output=predictions)
-
+model.load_weights('./NN/rps_pretrain.h5')
 model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 
 
