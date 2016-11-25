@@ -1,37 +1,44 @@
 import numpy as np
+import glob
 import cv2
 from NN import imagenet_finetune
 
 # Turn on the camera
 cap = cv2.VideoCapture(0)
 
-# take first frame of the video
-track_window = (0, 0, 299, 299)
+track_window = (400, 100, 299, 299)
 
 # Load the image
-frame = cv2.imread("./Hand.jpg")
-# Convert to HSV colorspace
-hsv =  cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-# Specify bin size (we don't use the V component since it is not invariant to light
-(hmax, smax) = (180, 200)
+(hmax, smax) = (255, 255)
 (hbin, sbin) = (180, 4)
-# mask out all the dark pixels, only use pixel values above (0, 60, 60)
-mask = cv2.inRange(hsv, np.array((0., 60.,60.)), np.array((hmax,smax,255.)))
-# create a histogram over just the hue values binning them into 255 bins
-hist = cv2.calcHist([hsv],[0,1],mask,[hbin, sbin],[0,hmax, 0, smax])
-# Normalize the histogram to be between 0 and 255
-cv2.normalize(hist,hist,0,255,cv2.NORM_MINMAX)
+hists = []
+for image in glob.glob("./Models/*.jpg"):
+    frame = cv2.imread(image)
+    # Convert to HSV colorspace
+    hsv =  cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    # Specify bin size (we don't use the V component since it is not invariant to light
+    # mask out all the dark pixels, only use pixel values above (0, 60, 60)
+    mask = cv2.inRange(hsv, np.array((0., 10.,10.)), np.array((hmax,smax,255.)))
+    # create a histogram over just the hue values binning them into 255 bins
+    hist = cv2.calcHist([hsv],[0,1],mask,[hbin, sbin],[0,hmax, 0, smax])
+    # Normalize the histogram to be between 0 and 255
+    cv2.normalize(hist,hist,0,255,cv2.NORM_MINMAX)
+    hists.append(hist)
 
 # Setup the termination criteria, either 10 iteration or move by at least 1 pt
 term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
 
 NN_on = False
+font = cv2.FONT_HERSHEY_SIMPLEX
+text = ""
 
 while(1):
     ret ,frame = cap.read()
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    dst = cv2.calcBackProject([hsv],[0, 1],hist,[0,hmax, 0, smax],1)
+    dst = np.zeros(hsv.shape[0:2])
+    for hist in hists:
+        dst += cv2.calcBackProject([hsv],[0,1],hist,[0,hmax, 0, smax],1)/(100.0*len(hists))
 
     # apply meanshift to get the new location
     ret, track_window = cv2.meanShift(dst, track_window, term_crit)
@@ -45,9 +52,13 @@ while(1):
         x = imagenet_finetune.inception.preprocess_input(x)
         preds = imagenet_finetune.model.predict(x)
         # Output the results
+        options = ["Paper", "Rock", "Scissors"]
+        text = options[np.argmax(preds)]
         print('Predicted:', preds)
+        NN_on = False
 
     # Draw the rectangle on the image
+    cv2.putText(frame,text,(10,500), font, 4,(255,255,255),2,cv2.LINE_AA)
     x,y,w,h = track_window
     img2 = cv2.rectangle(frame, (x,y), (x+w,y+h), 255,2)
     cv2.imshow('img2',img2)
