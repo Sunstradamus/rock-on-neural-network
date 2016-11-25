@@ -10,3 +10,5 @@ kp = sift.detect(img_gray, None)
 img = cv2.drawKeypoints(img_gray, kp)
 cv2.imshow('kp', img)
 cv2.waitKey(0)
+
+# kp, des = sift.detectAndCompute(img_gray, None)
