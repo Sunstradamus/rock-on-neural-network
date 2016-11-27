@@ -101,7 +101,7 @@ matches = flann.knnMatch(des, des_t, k=2)
 
 good = []
 for (m,n) in matches:
-	#if m.distance < 0.7*n.distance:
+	if m.distance < 0.9*n.distance:
 		good.append(m)
 
 #draw_params = dict(matchColor = (0,255,0), singlePointColor = (255,0,0), matchesMask = matchesMask, flags = 0)
