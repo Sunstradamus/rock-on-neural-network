@@ -223,6 +223,7 @@ class SiftDetector(object):
         kp, des = self.sift.detectAndCompute(image, None)
         image_idx = 0
         image_matches = None
+        matched_kp = None
         max_count = 0
         classifier = ''
         for classname in self.train_data:
@@ -240,9 +241,10 @@ class SiftDetector(object):
                   if return_metadata:
                     image_idx = img_num
                     image_matches = matches
+                    matched_kp = kp_t
               img_num += 1
         if return_metadata:
-            return classifier, kp, image_idx, kp_t, image_matches
+            return classifier, kp, image_idx, matched_kp, image_matches
         else:
             return classifier
 
@@ -251,6 +253,7 @@ class SiftDetector(object):
         kp, des = self.sift.detectAndCompute(image, None)
         image_idx = 0
         image_matches = None
+        matched_kp = None
         max_count = 0
         classifier = ''
         for classname in self.train_data:
@@ -268,9 +271,10 @@ class SiftDetector(object):
                   if return_metadata:
                     image_idx = img_num
                     image_matches = matches
+                    matched_kp = kp_t
               img_num += 1
         if return_metadata:
-            return classifier, kp, image_idx, kp_t, image_matches
+            return classifier, kp, image_idx, matched_kp, image_matches
         else:
             return classifier
 
