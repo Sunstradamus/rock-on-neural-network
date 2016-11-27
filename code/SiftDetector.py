@@ -2,108 +2,292 @@ import cv2
 import numpy as np
 import os
 
-def drawMatches(img1, kp1, img2, kp2, matches):
-    """
-    @http://stackoverflow.com/questions/20259025/module-object-has-no-attribute-drawmatches-opencv-python/26227854#26227854
+class SiftDetector(object):
+    """docstring for SiftDetector"""
+    steps = {'Rock': 0.63, 'Paper': 0.58, 'Scissors': 0.74}
+    train_dir = ""
+    train_data = dict()
 
-    My own implementation of cv2.drawMatches as OpenCV 2.4.9
-    does not have this function available but it's supported in
-    OpenCV 3.0.0
+    def __init__(self, debug=False):
+        super(SiftDetector, self).__init__()
+        self.sift = cv2.SIFT()
+        self.matcher = cv2.BFMatcher()
+        self.debug = debug
 
-    This function takes in two images with their associated 
-    keypoints, as well as a list of DMatch data structure (matches) 
-    that contains which keypoints matched in which images.
+    def drawMatches(self, img1, kp1, img2, kp2, matches):
+        """
+        @http://stackoverflow.com/questions/20259025/module-object-has-no-attribute-drawmatches-opencv-python/26227854#26227854
 
-    An image will be produced where a montage is shown with
-    the first image followed by the second image beside it.
+        My own implementation of cv2.drawMatches as OpenCV 2.4.9
+        does not have this function available but it's supported in
+        OpenCV 3.0.0
 
-    Keypoints are delineated with circles, while lines are connected
-    between matching keypoints.
+        This function takes in two images with their associated 
+        keypoints, as well as a list of DMatch data structure (matches) 
+        that contains which keypoints matched in which images.
 
-    img1,img2 - Grayscale images
-    kp1,kp2 - Detected list of keypoints through any of the OpenCV keypoint 
-              detection algorithms
-    matches - A list of matches of corresponding keypoints through any
-              OpenCV keypoint matching algorithm
-    """
+        An image will be produced where a montage is shown with
+        the first image followed by the second image beside it.
 
-    # Create a new output image that concatenates the two images together
-    # (a.k.a) a montage
-    rows1 = img1.shape[0]
-    cols1 = img1.shape[1]
-    rows2 = img2.shape[0]
-    cols2 = img2.shape[1]
+        Keypoints are delineated with circles, while lines are connected
+        between matching keypoints.
 
-    out = np.zeros((max([rows1,rows2]),cols1+cols2,3), dtype='uint8')
+        img1,img2 - Grayscale images
+        kp1,kp2 - Detected list of keypoints through any of the OpenCV keypoint 
+                  detection algorithms
+        matches - A list of matches of corresponding keypoints through any
+                  OpenCV keypoint matching algorithm
+        """
 
-    # Place the first image to the left
-    out[:rows1,:cols1] = np.dstack([img1, img1, img1])
+        # Create a new output image that concatenates the two images together
+        # (a.k.a) a montage
+        rows1 = img1.shape[0]
+        cols1 = img1.shape[1]
+        rows2 = img2.shape[0]
+        cols2 = img2.shape[1]
 
-    # Place the next image to the right of it
-    out[:rows2,cols1:] = np.dstack([img2, img2, img2])
+        out = np.zeros((max([rows1,rows2]),cols1+cols2,3), dtype='uint8')
 
-    # For each pair of points we have between both images
-    # draw circles, then connect a line between them
-    for mat in matches:
+        # Place the first image to the left
+        out[:rows1,:cols1] = np.dstack([img1, img1, img1])
 
-        # Get the matching keypoints for each of the images
-        img1_idx = mat.queryIdx
-        img2_idx = mat.trainIdx
+        # Place the next image to the right of it
+        out[:rows2,cols1:] = np.dstack([img2, img2, img2])
 
-        # x - columns
-        # y - rows
-        (x1,y1) = kp1[img1_idx].pt
-        (x2,y2) = kp2[img2_idx].pt
+        # For each pair of points we have between both images
+        # draw circles, then connect a line between them
+        for mat in matches:
 
-        # Draw a small circle at both co-ordinates
-        # radius 4
-        # colour blue
-        # thickness = 1
-        cv2.circle(out, (int(x1),int(y1)), 4, (255, 0, 0), 1)   
-        cv2.circle(out, (int(x2)+cols1,int(y2)), 4, (255, 0, 0), 1)
+            # Get the matching keypoints for each of the images
+            img1_idx = mat.queryIdx
+            img2_idx = mat.trainIdx
 
-        # Draw a line in between the two points
-        # thickness = 1
-        # colour blue
-        cv2.line(out, (int(x1),int(y1)), (int(x2)+cols1,int(y2)), (255, 0, 0), 1)
+            # x - columns
+            # y - rows
+            (x1,y1) = kp1[img1_idx].pt
+            (x2,y2) = kp2[img2_idx].pt
+
+            # Draw a small circle at both co-ordinates
+            # radius 4
+            # colour blue
+            # thickness = 1
+            cv2.circle(out, (int(x1),int(y1)), 4, (255, 0, 0), 1)   
+            cv2.circle(out, (int(x2)+cols1,int(y2)), 4, (255, 0, 0), 1)
+
+            # Draw a line in between the two points
+            # thickness = 1
+            # colour blue
+            cv2.line(out, (int(x1),int(y1)), (int(x2)+cols1,int(y2)), (255, 0, 0), 1)
 
 
-    # Show the image
-    cv2.imshow('Matched Features', out)
-    cv2.waitKey(0)
-    cv2.destroyWindow('Matched Features')
+        # Show the image
+        cv2.imshow('Matched Features', out)
+        cv2.waitKey(0)
+        cv2.destroyWindow('Matched Features')
 
-    # Also return the image if you'd like a copy
-    return out
+        # Also return the image if you'd like a copy
+        return out
 
-img = cv2.imread('Models/Rock/1.jpg')
-img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    def loadTrainingImages(self, TRAIN_DIR):
+        """
+        dir - String of relative path to folder that contains subfolders of training classes
+        """
+        self.train_dir = TRAIN_DIR
+        for classname in sorted(os.listdir(TRAIN_DIR)):
+            self.train_data[classname] = list()
+            for image in sorted(os.listdir(TRAIN_DIR+'/'+classname)):
+                img = cv2.imread(TRAIN_DIR+'/'+classname+'/'+image)
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                self.train_data[classname].append(self.sift.detectAndCompute(img, None))
+        if self.debug:
+            print 'Loaded ' + str(len(self.train_data)) + ' classes'
 
-sift = cv2.SIFT()
-kp, des = sift.detectAndCompute(img_gray, None)
+    def predict(self, img, rps=False):
+        """
+        img - color image array
+        """
+        if len(self.train_data) == 0:
+            raise RuntimeError('SiftDetector has not learned any classifiers yet, call loadTrainingData before predict')
+        if rps:
+            if self.debug:
+                print 'Using RPS predict'
+            return self.__rpsPredict(img)
+        else:
+            if self.debug:
+                print 'Using generic predict'
+            return self.__genericPredict(img)
 
-img = cv2.drawKeypoints(img_gray, kp)
-cv2.imshow('kp', img)
-cv2.waitKey(0)
+    def predictAndDraw(self, img, rps=False):
+        """
+        img - color image array
+        """
+        if len(self.train_data) == 0:
+            raise RuntimeError('SiftDetector has not learned any classifiers yet, call loadTrainingData before predict')
+        if rps:
+            if self.debug:
+                print 'Using RPS predict'
+            (cls, kp, index, kp_t, matches) = self.__rpsPredict(img, True)
+            good = list()
+            for (m,n) in matches:
+                if m.distance < self.steps[cls]*n.distance:
+                    good.append(m)
+        else:
+            if self.debug:
+                print 'Using generic predict'
+            (cls, kp, index, kp_t, matches) = self.__genericPredict(img, True)
+            good = list()
+            for (m,n) in matches:
+                if m.distance < 0.7*n.distance:
+                    good.append(m)
 
-test = cv2.imread('NewPhotos/train/Rock/99.jpg')
-test_gray = cv2.cvtColor(test, cv2.COLOR_BGR2GRAY)
-kp_t, des_t = sift.detectAndCompute(test_gray, None)
-cv2.imshow('kp', cv2.drawKeypoints(test_gray, kp_t))
+        images = sorted(os.listdir(self.train_dir+'/'+cls))
+        image = cv2.imread(self.train_dir+'/'+cls+'/'+images[index])
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        self.drawMatches(gray, kp, image, kp_t, good)
+        return cls
 
-# Alg 0 = FLANN_INDEX_KDTREE
-index_params = dict(algorithm = 0, trees = 5)
-search_params = dict(checks = 50)
 
-# k nearest neighbour matcher
-flann = cv2.FlannBasedMatcher(index_params, search_params)
-matches = flann.knnMatch(des, des_t, k=2)
+    def calcGlobalRatio(self, data_dir, start_step=0.5, step_size=0.01):
+        if len(self.train_data) == 0:
+            raise RuntimeError('SiftDetector has not learned any classifiers yet, call loadTrainingData before calcGlobalRatio')
 
-good = []
-for (m,n) in matches:
-	if m.distance < 0.9*n.distance:
-		good.append(m)
+        best_delta = 0
+        best_fail = 999
+        test_data = self.__loadData(data_dir, True)
+        for delta in np.arange(start_step, 1, step_size):
+            fail = 0
 
-#draw_params = dict(matchColor = (0,255,0), singlePointColor = (255,0,0), matchesMask = matchesMask, flags = 0)
+            for class_name in test_data:
+                for (kp, des) in test_data[class_name]:
+                    max_count = 0
+                    classifier = ''
+                    for classname in self.train_data:
+                      for (kp_t,des_t) in self.train_data[classname]:
+                          matches = self.matcher.knnMatch(des, des_t, k=2)
 
-drawMatches(img_gray,kp,test_gray,kp_t,good)
+                          count = 0
+                          for (m,n) in matches:
+                              if m.distance < delta*n.distance:
+                                  count += 1
+                          if count > max_count:
+                              max_count = count
+                              classifier = classname
+                    if classifier != class_name:
+                        fail += 1
+
+            if fail <= best_fail:
+                best_fail = fail
+                best_delta = delta
+            if self.debug:
+                print 'Failure rate ('+str(delta)+') ' + str(fail)
+        return best_delta
+
+    def calcLocalRatio(self, data_dir, class_name, start_step=0.5, step_size=0.01):
+        if len(self.train_data) == 0:
+            raise RuntimeError('SiftDetector has not learned any classifiers yet, call loadTrainingData before calcLocalRatio')
+
+        best_delta = 0
+        best_fail = 999
+        test_data = self.__loadData(data_dir+'/'+class_name)
+        for delta in np.arange(start_step, 1, step_size):
+            fail = 0
+
+            for (kp, des) in test_data:
+                max_count = 0
+                classifier = ''
+                for classname in self.train_data:
+                  for (kp_t,des_t) in self.train_data[classname]:
+                      matches = self.matcher.knnMatch(des, des_t, k=2)
+
+                      count = 0
+                      for (m,n) in matches:
+                          if m.distance < delta*n.distance:
+                              count += 1
+                      if count > max_count:
+                          max_count = count
+                          classifier = classname
+                if classifier != class_name:
+                    fail += 1
+
+            if fail <= best_fail:
+                best_fail = fail
+                best_delta = delta
+            if self.debug:
+                print 'Failure rate ('+str(delta)+') ' + str(fail)
+        return best_delta
+
+    def __genericPredict(self, img, return_metadata=False):
+        image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        kp, des = self.sift.detectAndCompute(image, None)
+        image_idx = 0
+        image_matches = None
+        max_count = 0
+        classifier = ''
+        for classname in self.train_data:
+          img_num = 0
+          for (kp_t,des_t) in self.train_data[classname]:
+              matches = self.matcher.knnMatch(des, des_t, k=2)
+
+              count = 0
+              for (m,n) in matches:
+                  if m.distance < 0.7*n.distance:
+                      count += 1
+              if count > max_count:
+                  max_count = count
+                  classifier = classname
+                  if return_metadata:
+                    image_idx = img_num
+                    image_matches = matches
+              img_num += 1
+        if return_metadata:
+            return classifier, kp, image_idx, kp_t, image_matches
+        else:
+            return classifier
+
+    def __rpsPredict(self, img, return_metadata=False):
+        image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        kp, des = self.sift.detectAndCompute(image, None)
+        image_idx = 0
+        image_matches = None
+        max_count = 0
+        classifier = ''
+        for classname in self.train_data:
+          img_num = 0
+          for (kp_t,des_t) in self.train_data[classname]:
+              matches = self.matcher.knnMatch(des, des_t, k=2)
+
+              count = 0
+              for (m,n) in matches:
+                  if m.distance < self.steps[classname]*n.distance:
+                      count += 1
+              if count > max_count:
+                  max_count = count
+                  classifier = classname
+                  if return_metadata:
+                    image_idx = img_num
+                    image_matches = matches
+              img_num += 1
+        if return_metadata:
+            return classifier, kp, image_idx, kp_t, image_matches
+        else:
+            return classifier
+
+    def __loadData(self, ddir, globald=False):
+        if globald:
+            data = dict()
+            for classname in os.listdir(ddir):
+                data[classname] = list()
+                for image in os.listdir(ddir+'/'+classname):
+                    img = cv2.imread(ddir+'/'+classname+'/'+image)
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+                    data[classname].append(self.sift.detectAndCompute(img, None))
+        else:
+            data = list()
+            for image in os.listdir(ddir):
+                img = cv2.imread(ddir+'/'+image)
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+                data.append(self.sift.detectAndCompute(img, None))
+        return data
