@@ -3,7 +3,6 @@ Super janky ass rock paper scissors game
 """
 
 #importing modules required
-from ttk import *
 import Tkinter as tk
 from Tkinter import *
 import cv2
