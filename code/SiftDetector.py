@@ -4,7 +4,8 @@ import os
 
 class SiftDetector(object):
     """docstring for SiftDetector"""
-    steps = {'Rock': 0.63, 'Paper': 0.58, 'Scissors': 0.74}
+    steps = {'Rock': 0.78, 'Paper': 0.73, 'Scissors': 0.74}
+    ratio = 0.76
     train_dir = ""
     train_data = dict()
 
@@ -137,7 +138,7 @@ class SiftDetector(object):
             (cls, kp, index, kp_t, matches) = self.__genericPredict(img, True)
             good = list()
             for (m,n) in matches:
-                if m.distance < 0.7*n.distance:
+                if m.distance < self.ratio*n.distance:
                     good.append(m)
 
         images = sorted(os.listdir(self.train_dir+'/'+cls))
@@ -231,7 +232,7 @@ class SiftDetector(object):
 
               count = 0
               for (m,n) in matches:
-                  if m.distance < 0.7*n.distance:
+                  if m.distance < self.ratio*n.distance:
                       count += 1
               if count > max_count:
                   max_count = count
