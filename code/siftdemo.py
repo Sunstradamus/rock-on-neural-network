@@ -32,23 +32,24 @@ for classname in TRAIN_FILES:
 	print 'Created keypoints for class "' + classname + '"'
 print
 
-print 'Loading random test image'
-img = cv2.imread(TEST_DIR+'/Rock/P_111.jpg')
-img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-print 'Creating keypoints'
-kp, des = sift.detectAndCompute(img, None)
-print 'Calculating best match'
-max_count = 0
-classifier = ''
-for classname in train_data:
-	for (kp_t,des_t) in train_data[classname]:
-		matches = matcher.knnMatch(des, des_t, k=2)
+print 'Loading random class test images'
+for image in sorted(os.listdir(TEST_DIR+'/Rock')):
+	img = cv2.imread(TEST_DIR+'/Rock/'+image)
+	img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	#print 'Creating keypoints'
+	kp, des = sift.detectAndCompute(img, None)
+	#print 'Calculating best match'
+	max_count = 0
+	classifier = ''
+	for classname in train_data:
+		for (kp_t,des_t) in train_data[classname]:
+			matches = matcher.knnMatch(des, des_t, k=2)
 
-		count = 0
-		for (m,n) in matches:
-			if m.distance < 0.8*n.distance:
-				count += 1
-		if count > max_count:
-			max_count = count
-			classifier = classname
-print 'Best match: ' + classifier + ' with score ' + str(max_count)
+			count = 0
+			for (m,n) in matches:
+				if m.distance < 0.8*n.distance:
+					count += 1
+			if count > max_count:
+				max_count = count
+				classifier = classname
+	print 'Best match ('+image+'): ' + classifier + ' with score ' + str(max_count)
