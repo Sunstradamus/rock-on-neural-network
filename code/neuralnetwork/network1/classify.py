@@ -39,8 +39,8 @@ model.load_weights('network1.h5')
 
 def preprocess_input(x):
     x /= 255.
-    x -= 0.5
-    x *= 2.
+    #x -= 0.5
+    #x *= 2.
     return x
 
 import html
@@ -52,7 +52,7 @@ images = glob.glob(train_dir + "/*/*.jpg")
 count = 0
 progress.progress_bar(0)
 for image_path in images:
-    img = image.load_img(image_path, target_size=IMSIZE)
+    img = image.load_img(image_path)
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
 

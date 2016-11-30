@@ -37,24 +37,24 @@ predictions = Dense(N_CLASSES, activation='softmax', name='predictions')(x)
 # this is the model we will train
 model = Model(input=base_model.input, output=predictions)
 
-model.load_weights('network1.h5')
+model.load_weights('network4.h5')
 
 def preprocess_input(x):
     x /= 255.
-    x -= 0.5
-    x *= 2.
+    #x -= 0.5
+    #x *= 2.
     return x
 
 import html
 import glob
 import progress
 htmltext = html.getHead()
-images = glob.glob(test_dir + "/*/*.jpg")
+images = glob.glob(train_dir + "/*/*.jpg")
 
 count = 0
 progress.progress_bar(0)
 for image_path in images:
-    img = image.load_img(image_path, target_size=IMSIZE)
+    img = image.load_img(image_path)
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
 

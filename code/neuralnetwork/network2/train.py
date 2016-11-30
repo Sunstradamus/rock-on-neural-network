@@ -44,7 +44,7 @@ for layer in base_model.layers:
 #model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
 # Show some debug output
-print (model.summary())
+#print (model.summary())
 
 #print 'Trainable weights'
 #print model.trainable_weights
@@ -91,13 +91,13 @@ for layer in model.layers[172:]:
 
 # we need to recompile the model for these modifications to take effect
 # we use SGD with a low learning rate
-model.compile(optimizer=SGD(lr=0.0001, momentum=0.1), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Data generators for feeding training/testing images to the model.
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
@@ -105,7 +105,7 @@ train_generator = train_datagen.flow_from_directory(
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
@@ -113,41 +113,13 @@ test_generator = test_datagen.flow_from_directory(
 model.fit_generator(
         train_generator,
         samples_per_epoch=215,
-        nb_epoch=50,
+        nb_epoch=300,
         validation_data=test_generator,
         verbose=2,
         nb_val_samples=196)
 
-model.save_weights('network1.h5')  # always save your weights after training or during training
+model.save_weights('network2.h5')  # always save your weights after training or during training
 
-
-
-
-'''
-Epoch 40/50
-3s - loss: 1.2319 - acc: 0.4000 - val_loss: 1.0827 - val_acc: 0.4133
-Epoch 41/50
-3s - loss: 1.1380 - acc: 0.4558 - val_loss: 1.0785 - val_acc: 0.4541
-Epoch 42/50
-3s - loss: 1.1984 - acc: 0.4140 - val_loss: 1.0821 - val_acc: 0.4388
-Epoch 43/50
-3s - loss: 1.1248 - acc: 0.4605 - val_loss: 1.0631 - val_acc: 0.4490
-Epoch 44/50
-3s - loss: 1.1942 - acc: 0.3953 - val_loss: 1.0808 - val_acc: 0.4388
-Epoch 45/50
-3s - loss: 1.1501 - acc: 0.4279 - val_loss: 1.0430 - val_acc: 0.4745
-Epoch 46/50
-3s - loss: 1.1693 - acc: 0.4000 - val_loss: 1.0799 - val_acc: 0.4286
-Epoch 47/50
-3s - loss: 1.1866 - acc: 0.4047 - val_loss: 1.0594 - val_acc: 0.4337
-Epoch 48/50
-3s - loss: 1.1678 - acc: 0.4326 - val_loss: 1.0785 - val_acc: 0.4388
-Epoch 49/50
-3s - loss: 1.1777 - acc: 0.3907 - val_loss: 1.1033 - val_acc: 0.3776
-Epoch 50/50
-3s - loss: 1.1703 - acc: 0.4465 - val_loss: 1.0771 - val_acc: 0.4388
-
-'''
 
 
 

@@ -25,12 +25,9 @@ base_model = InceptionV3(weights='imagenet', include_top=False)
 
 # add a global spatial average pooling layer
 x = base_model.output
-x = Dropout(0.5)(x)
 x = GlobalAveragePooling2D()(x)
-x = Dropout(0.5)(x)
 # let's add a fully-connected layer
-x = Dense(32, activation='relu')(x)
-x = Dropout(0.5)(x)
+x = Dense(1024, activation='relu')(x)
 # and a logistic layer -- let's say we have 3 classes
 predictions = Dense(N_CLASSES, activation='softmax', name='predictions')(x)
 
@@ -41,12 +38,12 @@ model = Model(input=base_model.input, output=predictions)
 # i.e. freeze all convolutional InceptionV3 layers
 for layer in base_model.layers:
     layer.trainable = False
-'''
+
 # compile the model (should be done *after* setting layers to non-trainable)
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
 # Show some debug output
-print (model.summary())
+#print (model.summary())
 
 #print 'Trainable weights'
 #print model.trainable_weights
@@ -55,25 +52,25 @@ print (model.summary())
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
         class_mode='categorical')
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
         class_mode='categorical')
 
 model.fit_generator(
         train_generator,
         samples_per_epoch=215,
-        nb_epoch=15,
+        nb_epoch=50,
         validation_data=test_generator,
         verbose=2,
         nb_val_samples=196)
-'''
+
 
 # at this point, the top layers are well trained and we can start fine-tuning
 # convolutional layers from inception V3. We will freeze the bottom N layers

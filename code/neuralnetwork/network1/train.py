@@ -53,21 +53,21 @@ print (model.summary())
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
         class_mode='categorical')
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
         class_mode='categorical')
 
 model.fit_generator(
         train_generator,
         samples_per_epoch=215,
-        nb_epoch=10,
+        nb_epoch=50,
         validation_data=test_generator,
         verbose=2,
         nb_val_samples=196)
@@ -91,13 +91,13 @@ for layer in model.layers[172:]:
 
 # we need to recompile the model for these modifications to take effect
 # we use SGD with a low learning rate
-model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Data generators for feeding training/testing images to the model.
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
@@ -105,7 +105,7 @@ train_generator = train_datagen.flow_from_directory(
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
@@ -113,42 +113,12 @@ test_generator = test_datagen.flow_from_directory(
 model.fit_generator(
         train_generator,
         samples_per_epoch=215,
-        nb_epoch=30,
+        nb_epoch=300,
         validation_data=test_generator,
         verbose=2,
         nb_val_samples=196)
 
 model.save_weights('network1.h5')  # always save your weights after training or during training
-
-
-
-
-'''
-Epoch 290/300
-3s - loss: 0.3828 - acc: 0.8326 - val_loss: 0.6030 - val_acc: 0.7500
-Epoch 291/300
-3s - loss: 0.4103 - acc: 0.8047 - val_loss: 0.5840 - val_acc: 0.7398
-Epoch 292/300
-3s - loss: 0.3958 - acc: 0.8140 - val_loss: 0.6005 - val_acc: 0.7143
-Epoch 293/300
-3s - loss: 0.3800 - acc: 0.8512 - val_loss: 0.5614 - val_acc: 0.7500
-Epoch 294/300
-3s - loss: 0.3940 - acc: 0.8326 - val_loss: 0.5703 - val_acc: 0.7347
-Epoch 295/300
-3s - loss: 0.4015 - acc: 0.8093 - val_loss: 0.5692 - val_acc: 0.7602
-Epoch 296/300
-3s - loss: 0.4090 - acc: 0.8419 - val_loss: 0.5734 - val_acc: 0.7398
-Epoch 297/300
-3s - loss: 0.3563 - acc: 0.8419 - val_loss: 0.5822 - val_acc: 0.7449
-Epoch 298/300
-3s - loss: 0.4151 - acc: 0.8186 - val_loss: 0.5680 - val_acc: 0.7602
-Epoch 299/300
-3s - loss: 0.4166 - acc: 0.8465 - val_loss: 0.6008 - val_acc: 0.7347
-Epoch 300/300
-3s - loss: 0.4293 - acc: 0.8233 - val_loss: 0.5673 - val_acc: 0.7551
-'''
-
-
 
 
 

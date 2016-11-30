@@ -29,7 +29,7 @@ base_model = InceptionV3(weights='imagenet')
 
 # Add on new fully connected layers for the output classes.
 x = Dense(32, activation='relu')(base_model.get_layer('flatten').output)
-x = Dropout(0.8)(x)
+x = Dropout(0.5)(x)
 predictions = Dense(N_CLASSES, activation='softmax', name='predictions')(x)
 
 model = Model(input=base_model.input, output=predictions)
@@ -44,8 +44,8 @@ model.load_weights('baseline.h5')
 
 def preprocess_input(x):
     x /= 255.
-    x -= 0.5
-    x *= 2.
+    #x -= 0.5
+    #x *= 2.
     return x
 
 import html
@@ -57,7 +57,7 @@ images = glob.glob(train_dir + "/*/*.jpg")
 count = 0
 progress.progress_bar(0)
 for image_path in images:
-    img = image.load_img(image_path, target_size=IMSIZE)
+    img = image.load_img(image_path)
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
 
