@@ -16,9 +16,9 @@ from keras.applications.inception_v3 import InceptionV3
 
 # TO DO:: Replace these with paths to the downloaded data.
 # Training directory
-train_dir = '/media/wilson/5074-42A6/419porj/419-project/code/NewPhotos/train'
+train_dir = '/Users/paul/Desktop/419-project/code/NewPhotos/train'
 # Testing directory
-test_dir = '/media/wilson/5074-42A6/419porj/419-project/code/NewPhotos/validation'
+test_dir = '/Users/paul/Desktop/419-project/code/NewPhotos/validation'
 
 N_CLASSES = 3
 IMSIZE = (299, 299)
@@ -66,7 +66,7 @@ test_generator = test_datagen.flow_from_directory(
 model.fit_generator(
         train_generator,
         samples_per_epoch=215, # All of the samples
-        nb_epoch=100,
+        nb_epoch=2,
         validation_data=test_generator,
         verbose=2,
         nb_val_samples=196) # All of the validation images

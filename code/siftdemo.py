@@ -13,9 +13,11 @@ s.loadTrainingImages(TRAIN_DIR)
 
 print 'Loading test data'
 for classname in sorted(os.listdir(TEST_DIR)):
+        if classname == ".DS_Store": continue
 	TEST_FILES[classname] = list()
 
 	for image in os.listdir(TEST_DIR+'/'+classname):
+                if image == ".DS_Store": continue
 		img = cv2.imread(TEST_DIR+'/'+classname+'/'+image)
 		TEST_FILES[classname].append(img)
 

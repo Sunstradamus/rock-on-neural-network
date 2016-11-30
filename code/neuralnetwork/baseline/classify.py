@@ -16,9 +16,9 @@ from keras.applications.inception_v3 import InceptionV3, decode_predictions
 
 # TO DO:: Replace these with paths to the downloaded data.
 # Training directory
-train_dir = '/media/wilson/5074-42A6/419porj/419-project/code/NewPhotos/train'
+train_dir = '../../NewPhotos/train'
 # Testing directory
-test_dir = '/media/wilson/5074-42A6/419porj/419-project/code/NewPhotos/validation'
+test_dir = '../../NewPhotos/validation'
 
 N_CLASSES = 3
 IMSIZE = (299, 299)
@@ -55,6 +55,7 @@ htmltext = html.getHead()
 images = glob.glob(train_dir + "/*/*.jpg")
 
 count = 0
+totalcorrect = 0
 progress.progress_bar(0)
 for image_path in images:
     img = image.load_img(image_path, target_size=IMSIZE)
@@ -73,13 +74,16 @@ for image_path in images:
 
     htmltext += html.makeRow(image_path, preds, correct, np.argmax(preds))
     count += 1
+    if correct == np.argmax(preds): totalcorrect += 1
     progress.progress_bar(count*100/len(images))
 
-htmltext += html.getTail()
+htmltext += html.getTail(totalcorrect,count)
 
 outfile = open("test.html", 'w')
 outfile.write(htmltext)
 outfile.close()
+
+print "Score: %d/%d" %(totalcorrect, count)
 
 
 

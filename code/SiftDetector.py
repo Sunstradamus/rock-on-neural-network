@@ -1,17 +1,21 @@
 import cv2
 import numpy as np
 import os
+import platform
 
 class SiftDetector(object):
     """docstring for SiftDetector"""
     steps = {'Rock': 0.78, 'Paper': 0.73, 'Scissors': 0.74}
-    ratio = 0.76
+    ratio = 0.78
     train_dir = ""
     train_data = dict()
 
     def __init__(self, debug=False):
         super(SiftDetector, self).__init__()
-        self.sift = cv2.SIFT()
+        if platform.system() == "Darwin":
+            self.sift = cv2.xfeatures2d.SIFT_create()
+        else:
+            self.sift = cv2.SIFT()
         self.matcher = cv2.BFMatcher()
         self.debug = debug
 
@@ -95,8 +99,10 @@ class SiftDetector(object):
         """
         self.train_dir = TRAIN_DIR
         for classname in sorted(os.listdir(TRAIN_DIR)):
+            if classname == ".DS_Store": continue
             self.train_data[classname] = list()
             for image in sorted(os.listdir(TRAIN_DIR+'/'+classname)):
+                if image == ".DS_Store": continue
                 img = cv2.imread(TRAIN_DIR+'/'+classname+'/'+image)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                 self.train_data[classname].append(self.sift.detectAndCompute(img, None))
@@ -142,6 +148,7 @@ class SiftDetector(object):
                     good.append(m)
 
         images = sorted(os.listdir(self.train_dir+'/'+cls))
+        if images.__contains__(".DS_Store"): images.remove(".DS_Store")
         image = cv2.imread(self.train_dir+'/'+cls+'/'+images[index])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -282,8 +289,10 @@ class SiftDetector(object):
         if globald:
             data = dict()
             for classname in os.listdir(ddir):
+                if classname == ".DS_Store": continue
                 data[classname] = list()
                 for image in os.listdir(ddir+'/'+classname):
+                    if image == ".DS_Store": continue
                     img = cv2.imread(ddir+'/'+classname+'/'+image)
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -291,6 +300,7 @@ class SiftDetector(object):
         else:
             data = list()
             for image in os.listdir(ddir):
+                if image == ".DS_Store": continue
                 img = cv2.imread(ddir+'/'+image)
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
