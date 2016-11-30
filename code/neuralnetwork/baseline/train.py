@@ -52,24 +52,26 @@ model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accura
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
-        batch_size=64,
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        batch_size=60,
+	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
-        batch_size=64,
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        batch_size=60,
+	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
 
 model.fit_generator(
         train_generator,
-        samples_per_epoch=215, # All of the samples
+        samples_per_epoch=215,
         nb_epoch=300,
         validation_data=test_generator,
         verbose=2,
-        nb_val_samples=196) # All of the validation images
+        nb_val_samples=196)
 
 model.save_weights('baseline.h5')  # always save your weights after training or during training
 

@@ -17,10 +17,11 @@ def getHead():
     </tr>
 '''
 
-def getTail():
-    return '''  </table>
-</body>
-</html>'''
+def getTail(correct,total):
+    string =  "  </table>\n"
+    string += "Score: %d/%d" %(correct, total)
+    string += "</body>\n</html>"
+    return string
 
 def makeCell(text, bgcolor=""):
     if bgcolor == "":

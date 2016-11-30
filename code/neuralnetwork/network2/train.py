@@ -97,7 +97,7 @@ model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossent
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
@@ -105,7 +105,7 @@ train_generator = train_datagen.flow_from_directory(
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')

@@ -1,0 +1,31 @@
+started with baseline network
+tweaked network structure
+tried different network structure
+tweaked with inception layers - including/excluding top classification layer, relearning weights of top layers
+added dropout layers to regularize to get better val acc
+tweaked hyperparameters - loss functions, optimizers (sgd), learning rates, learning rate decay, momentum (nesterov),
+lots and lots and lots of overfitting - data set is too small for complex network, classification scores are way too certain when completely wrong
+- classification scores for almost all images were 1 for predicted class and 0 for everyuthing else
+=> really steep softmax result, when wrong it was really wrong (not even close)
+
+-training acc was almost always 100% for every network, validation accuracy hovered around 80% for most networks, validation accuracy found to oscillate quite a bit around 80-90% range -> used momentum, above 90% validation accuracy rare (possibly stuck in local minima), hard to get past due to small sample data size
+
+
+network7 is the best - 177/196 test, 215/215 training
+training 300 epochs using all 215 training samples per, validating against all test samples per,
+some networks redundant, little tweaks that made no improvements
+at least its better than sift
+small sample data size -> could use data augmentation to increase (supported by keras, dunno how 2 do)
+
+
+
+shit i looked at:
+google.com
+http://machinelearningmastery.com/dropout-regularization-deep-learning-models-keras/
+http://sebastianruder.com/optimizing-gradient-descent/index.html#nesterovacceleratedgradient
+http://colinraffel.com/wiki/neural_network_hyperparameters
+https://keras.io/optimizers/#usage-of-optimizers
+https://keras.io/applications/
+https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html
+https://4.bp.blogspot.com/-TMOLlkJBxms/Vt3HQXpE2cI/AAAAAAAAA8E/7X7XRFOY6Xo/s1600/image03.png          - inception
+

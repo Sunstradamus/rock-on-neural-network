@@ -1,7 +1,16 @@
 import numpy as np
 import glob
 import cv2
-from NN import imagenet_finetune
+import classify
+import SiftDetector
+
+# Initialize the SIFT detector
+print "Initializing SIFT..."
+#TRAIN_DIR = 'NewPhotos/train'
+TRAIN_DIR = 'Models'
+s = SiftDetector.SiftDetector()
+s.loadTrainingImages(TRAIN_DIR)
+#s.calcGlobalRatio("NewPhotos/validation")
 
 # Turn on the camera
 cap = cv2.VideoCapture(0)
@@ -12,7 +21,7 @@ track_window = (400, 100, 299, 299)
 (hmax, smax) = (255, 255)
 (hbin, sbin) = (180, 4)
 hists = []
-for image in glob.glob("./Models/*.jpg"):
+for image in glob.glob("./Models/Rock/1.jpg"):
     frame = cv2.imread(image)
     # Convert to HSV colorspace
     hsv =  cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -29,8 +38,10 @@ for image in glob.glob("./Models/*.jpg"):
 term_crit = ( cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1 )
 
 NN_on = False
+SIFT_on = False
 font = cv2.FONT_HERSHEY_SIMPLEX
-text = ""
+text1 = ""
+text2 = ""
 
 while(1):
     ret ,frame = cap.read()
@@ -49,16 +60,28 @@ while(1):
         part = frame[y:y+h,x:x+w,:].astype("float32")
         x = np.expand_dims(part, axis=0)
         # Pass it through the neural network
-        x = imagenet_finetune.inception.preprocess_input(x)
-        preds = imagenet_finetune.model.predict(x)
+        x = classify.preprocess_input(x)
+        preds = classify.model.predict(x)
         # Output the results
         options = ["Paper", "Rock", "Scissors"]
-        text = options[np.argmax(preds)]
+        text1 = options[np.argmax(preds)]
         print('Predicted:', preds)
         NN_on = False
+    if SIFT_on:
+
+        # get image from track_window and convert to the right format
+        (x,y,w,h) = track_window
+        part = frame[y:y+h,x:x+w,:]
+        # Pass it through SIFT
+        classifier = s.predict(part)
+        # Output the results
+        #print('Predicted:', classifier)
+        text2 = classifier
+        #SIFT_on = False
 
     # Draw the rectangle on the image
-    cv2.putText(frame,text,(10,500), font, 4,(255,255,255),2,cv2.LINE_AA)
+    cv2.putText(frame,text1,(10,500), font, 4,(255,255,255),2,cv2.LINE_AA)
+    cv2.putText(frame,text2,(10,300), font, 4,(255,0,255),2,cv2.LINE_AA)
     x,y,w,h = track_window
     img2 = cv2.rectangle(frame, (x,y), (x+w,y+h), 255,2)
     cv2.imshow('img2',img2)
@@ -69,6 +92,8 @@ while(1):
         break
     if k == ord('n'):
         NN_on = not NN_on
+    if k == ord('s'):
+        SIFT_on = not SIFT_on
 
 # Turn the camera off and close the window
 cv2.destroyAllWindows()

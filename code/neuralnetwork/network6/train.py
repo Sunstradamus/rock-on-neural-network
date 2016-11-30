@@ -25,9 +25,12 @@ base_model = InceptionV3(weights='imagenet', include_top=False)
 
 # add a global spatial average pooling layer
 x = base_model.output
+x = Dropout(0.5)(x)
 x = GlobalAveragePooling2D()(x)
+x = Dropout(0.5)(x)
 # let's add a fully-connected layer
-x = Dense(1024, activation='relu')(x)
+x = Dense(32, activation='relu')(x)
+x = Dropout(0.5)(x)
 # and a logistic layer -- let's say we have 3 classes
 predictions = Dense(N_CLASSES, activation='softmax', name='predictions')(x)
 
@@ -40,7 +43,7 @@ for layer in base_model.layers:
     layer.trainable = False
 
 # compile the model (should be done *after* setting layers to non-trainable)
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Show some debug output
 #print (model.summary())
@@ -52,14 +55,14 @@ model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
         class_mode='categorical')
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
         class_mode='categorical')
 
@@ -90,13 +93,13 @@ for layer in model.layers[172:]:
 
 # we need to recompile the model for these modifications to take effect
 # we use SGD with a low learning rate
-model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Data generators for feeding training/testing images to the model.
 train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
         train_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
@@ -104,7 +107,7 @@ train_generator = train_datagen.flow_from_directory(
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory(
         test_dir,  # this is the target directory
-        #target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
+        target_size=IMSIZE,  # all images will be resized to 299x299 Inception V3 input
         batch_size=60,
 	classes=['Paper', 'Rock', 'Scissors'],
         class_mode='categorical')
@@ -117,7 +120,7 @@ model.fit_generator(
         verbose=2,
         nb_val_samples=196)
 
-model.save_weights('network5.h5')  # always save your weights after training or during training
+model.save_weights('network6.h5')  # always save your weights after training or during training
 
 
 

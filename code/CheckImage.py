@@ -7,7 +7,7 @@ import os
 (hmax, smax) = (255, 255)
 (hbin, sbin) = (180, 4)
 hists = []
-for image in glob.glob("./Models/*.jpg"):
+for image in glob.glob("./Models/*/*.jpg"):
     frame = cv2.imread(image)
     # Convert to HSV colorspace
     hsv =  cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
