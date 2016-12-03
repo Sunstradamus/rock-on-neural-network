@@ -7,18 +7,21 @@ import Tkinter as tk
 from Tkinter import *
 import cv2
 from PIL import Image, ImageTk
-import os
 import numpy as np
 import time
 import threading
+
 stop = False
 
-last_frame = np.zeros((720, 1080, 3), dtype=np.uint8)
+# Latest frame is the most up to date image from webcam to display
+latest_frame = np.zeros((640, 480, 3), dtype=np.uint8)
+# Last frame is the last frame after game played (the user's hand)
+last_frame = np.zeros((640, 480, 3), dtype=np.uint8)
 cap = cv2.VideoCapture(0)
 
 # # Sets image size to 1280x720 (closest to 1080x720)
-cap.set(3, 1280)
-cap.set(4, 720)
+cap.set(3, 640)
+cap.set(4, 480)
 
 
 def back():
@@ -27,140 +30,168 @@ def back():
     stop = True
 
 
+# First function call after start game button pressed
 def take_photo():
-    # Shitty non blocking timer hack
-    t = threading.Timer(1.5, display_rock)
+
+    # Disables all the buttons once the game has started
+    start.configure(state=DISABLED)
+    reset.configure(state=DISABLED)
+    back.configure(state=DISABLED)
+
+    # Starts countdown to display rock text on game screen
+    # GOTTA START A NEW THREAD TO MAKE ASYNC OR ELSE SLEEPING WILL BLOCK THE MAIN THREAD SHOWING WEBCAM FEED AND IT DIES
+    t = threading.Timer(1.1, display_rock)
     t.start()
-    if mode == 0:
-        start_normal.configure(state=DISABLED)
-        reset_normal.configure(state=DISABLED)
-        back_normal.configure(state=DISABLED)
-    else:
-        start_unfair.configure(state=DISABLED)
-        reset_unfair.configure(state=DISABLED)
-        back_unfair.configure(state=DISABLED)
 
 
+# Second function call after start game button pressed
 def display_rock():
-    if mode == 0:
-        norm_text_label.configure(text="ROCK")
-    else:
-        unfair_text_label.configure(text="ROCK")
+    # Sets the text under the img to say rock
+    game_text_label.configure(text="ROCK")
 
-    t = threading.Timer(1.5, display_paper)
-    t.start()
+    # Starts countdown to display paper text on game screen
+    time.sleep(1.1)
+    display_paper()
 
+
+# Third function call after start game button pressed
 def display_paper():
-    if mode == 0:
-        norm_text_label.configure(text="PAPER")
-    else:
-        unfair_text_label.configure(text="PAPER")
+    # Sets the text under the img to say paper
+    game_text_label.configure(text="PAPER")
 
-    t = threading.Timer(1.5, stop_video)
-    t.start()
+    # Starts countdown to display scissors text on game screen
+    # and start the classification
+    time.sleep(1.1)
+    stop_video()
+
+
+def display_scissors():
+    # Sets the text under the img to say scissors
+    game_text_label.configure(text="SCISSORS")
+
 
 def stop_video():
     global stop
+    global last_frame
+    global game_main_img
 
-    # TODO: Randomize or select class
-    class_img = Image.open("rock.jpg")
-    class_img = ImageTk.PhotoImage(class_img)
-    stop = True
-
-    # Shitty race condition fix for video to stop first
-    time.sleep(0.3)
-
+    # If mode is normal, take last frame, stop video, display scissors text, then classify last_frame, and display result
     if mode == 0:
-        norm_text_label.configure(text="SCISSORS!")
-        norm_main_label.configure(image=class_img)
-        norm_main_label.image = class_img
+        # Copies the latest frame as the one to classify
+        last_frame = latest_frame.copy()
+        stop = True
 
+        # Waits until video has stopped so we can display computer's choice (else it overrides it)
+        while not stopped:
+            time.sleep(0.05)
+        # Displays the scissors text
+        display_scissors()
+
+        # TODO: RANDOMIZE A CHOICE OF ROCK, PAPER OR SCISSORS THEN CLASSIFY LAST_FRAME AND DISPLAY RESULTS
+        # make choice
+
+        # classify last frame
+        classify(last_frame)
+
+        # display choice
+        emg = Image.open("rock.jpg")
+        emg = ImageTk.PhotoImage(emg)
+        # The displayed image on the main screen
+        game_main_img.configure(image=emg)
+        game_main_img.image = emg
+
+    # If mode is unfair, take last frame (user will have hand rdy since each R, P, S comes after
+    # 1s each, but we will look at hand first
     else:
-        unfair_text_label.configure(text="SCISSORS!")
-        unfair_main_label.configure(image=class_img)
-        unfair_main_label.image = class_img
+        # Copies the latest frame as the one to classify
+        last_frame = latest_frame.copy()
 
-    t = threading.Timer(1.5, calculate_results)
-    t.start()
+        # TODO: CLASSIFY LAST FRAME, THEN MAKE OPPOSITE CHOICE OF CLASS AND DISPLAY RESULTS
+        # classify this last frame
+        classify(last_frame)
 
-def calculate_results():
-    if mode == 0:
-        norm_text_label.configure(text="Calculating...!")
+        # test to see if image looks fine when we take photo before hand
+        pic = cv2.cvtColor(latest_frame, cv2.COLOR_BGR2RGB)
+        pic = cv2.resize(pic, (640, 480))
+        img = Image.fromarray(pic)
+        img.save('cheat.jpg')  # TODO: randomize name
 
-        reset_normal.configure(state=NORMAL)
-        back_normal.configure(state=NORMAL)
-    else:
-        unfair_text_label.configure(text="Calculating...!")
+        time.sleep(1) # test with classification taking 1s
+        # make choice
+        # ?
 
-        reset_unfair.configure(state=NORMAL)
-        back_unfair.configure(state=NORMAL)
+        stop = True
+        # Waits until video has stopped so we can display computer's choice (else it overrides it)
+        while not stopped:
+            time.sleep(0.05)
+        # Displays the scissors text
+        display_scissors()
 
-    # TODO: Classify last_frame image
+        # test to see last image
+        pic = cv2.cvtColor(latest_frame, cv2.COLOR_BGR2RGB)
+        pic = cv2.resize(pic, (640, 480))
+        img = Image.fromarray(pic)
+        img.save('normal.jpg')  # TODO: randomize name
+
+        # display choice
+        emg = Image.open("rock.jpg")
+        emg = ImageTk.PhotoImage(emg)
+        # The displayed image on the main screen
+        game_main_img.configure(image=emg)
+        game_main_img.image = emg
+
+
+    # Reenables the reset and back the buttons once the game has finished
+    reset.configure(state=NORMAL)
+    back.configure(state=NORMAL)
 
 
 # Starts the normal game
-def start_normal_game():
+def start_game():
     global stop
-    global norm_main_label
-    global norm_text_label
+    global stopped
+    global game_text_label
+
+    # Set video flag to false
+    stop = False
+    stopped = False
+
+    game_text_label.configure(text="GET READY")
+
+    # Enables the start and back buttons and disables the reset button
+    start.configure(state=NORMAL)
+    back.configure(state=NORMAL)
+    reset.configure(state=DISABLED)
+
+    game_frame.tkraise()
+
+
+# Starts the normal game
+def set_normal_game():
     global mode
 
     # Set game mode to normal
     mode = 0
-    # Set video flag to false
-    stop = False
-
-    start_normal.configure(state=NORMAL)
-    back_normal.configure(state=NORMAL)
-    reset_normal.configure(state=DISABLED)
-
-    normal_frame.tkraise()
-
-    norm_main_label = tk.Label(master=normal_frame, width=1080, height=720)
-    norm_main_label.grid(row=0, sticky=W+E)
-    norm_text_label = tk.Label(master=normal_frame, font=('', 20,), text="GET READY", foreground="WHITE", background="RED")
-    norm_text_label.grid(row=1, sticky=W+E)
-
-    show_vid()
+    start_game()
 
 
 # Starts the unfair game
-def start_unfair_game():
-    global stop
-    global unfair_main_label
-    global unfair_text_label
+def set_unfair_game():
     global mode
 
     # Set game mode to unfair
     mode = 1
-    # Set video flag to false
-    stop = False
+    start_game()
 
-    start_unfair.configure(state=NORMAL)
-    back_unfair.configure(state=NORMAL)
-    reset_unfair.configure(state=DISABLED)
 
-    unfair_frame.tkraise()
-
-    unfair_main_label = tk.Label(master=unfair_frame, width=1080, height=720)
-    unfair_main_label.grid(row=0, sticky=W+E)
-    unfair_text_label = tk.Label(master=unfair_frame, font=('', 20,), text="GET READY", foreground="WHITE", background="RED")
-    unfair_text_label.grid(row=1, sticky=W+E)
-
-    show_vid()
+def classify(frame):
+    # TODO: Classify frame and return results
+    return
 
 
 def show_vid():
-    global stop
-    global last_frame
-
-    if stop:
-        # Save last picture for more data later i guess
-        pic = cv2.cvtColor(last_frame, cv2.COLOR_BGR2RGB)
-        pic = cv2.resize(pic, (1080, 720))
-        img = Image.fromarray(pic)
-        img.save('img.jpg') # TODO: randomize name
-        return
+    global latest_frame
+    global stopped
 
     if not cap.isOpened():
         print("cant open the camera")
@@ -171,68 +202,68 @@ def show_vid():
         print("cant open the camera")
         return
     elif flag:
-        last_frame = frame.copy()
-        height, width, channels = last_frame.shape
+        latest_frame = frame.copy()
 
-    pic = cv2.cvtColor(last_frame, cv2.COLOR_BGR2RGB)
-    pic = cv2.resize(pic, (1080, 720))
+    pic = cv2.cvtColor(latest_frame, cv2.COLOR_BGR2RGB)
+    pic = cv2.resize(pic, (640, 480))
     img = Image.fromarray(pic)
     imgtk = ImageTk.PhotoImage(image=img)
 
-    if mode == 0:
-        norm_main_label.imgtk = imgtk
-        norm_main_label.configure(image=imgtk)
-        norm_main_label.after(5, show_vid) # Callback loop to redisplay img every 10ms
+    if not stop:
+        game_main_img.imgtk = imgtk
+        game_main_img.configure(image=imgtk)
     else:
-        unfair_main_label.imgtk = imgtk
-        unfair_main_label.configure(image=imgtk)
-        unfair_main_label.after(5, show_vid)  # Callback loop to redisplay img every 10ms
+        stopped = True
+
+    game_main_img.after(5, show_vid) # Callback loop to redisplay img every 5ms
+
 
 if __name__ == '__main__':
     main_window = tk.Tk()
 
+    """ Sets up the initial GUI """
     # Creates the 3 main screens, stacked on top of each other
     main_frame = Frame(master=main_window)
-    normal_frame = Frame(master=main_window)
-    unfair_frame = Frame(master=main_window)
+    game_frame = Frame(master=main_window)
 
+    # Frames to hold the screen's GUI elements
     main_frame.grid(row=0, column=0, sticky='NEWS')
-    normal_frame.grid(row=0, column=0, sticky='NEWS')
-    unfair_frame.grid(row=0, column=0, sticky='NEWS')
+    game_frame.grid(row=0, column=0, sticky='NEWS')
 
     """ Main screen """
     # Displays the main img on the main screen
     main_img = Image.open("rps.jpg")
     main_img = ImageTk.PhotoImage(main_img)
-    main_label = tk.Label(main_frame, image=main_img, width=1080, height=760)
-    main_label.image = main_img # So not garbage collected
+    # The displayed image on the main screen
+    main_label = tk.Label(main_frame, image=main_img, width=640, height=480)
+    main_label.image = main_img  # So not garbage collected
     main_label.grid(row=0, rowspan=2, sticky=W+E)
 
-    # Displays the two game mode buttons on the main screen
-    normal_button = tk.Button(main_frame, font=('', 20,), pady=2, text="Normal", command=start_normal_game)
+    # The two game mode buttons on the main screen
+    normal_button = tk.Button(main_frame, font=('', 15,), text="Normal", command=set_normal_game)
     normal_button.grid(row=2, sticky=W+E)
-    unfair_button = tk.Button(main_frame, font=('', 20,), pady=2, text="Unfair", command=start_unfair_game)
+    unfair_button = tk.Button(main_frame, font=('', 15,), text="Unfair", command=set_unfair_game)
     unfair_button.grid(row=3, sticky=W+E)
 
-    """ Normal screen """
-    # Displays the game mode buttons on the normal screen
-    start_normal = tk.Button(normal_frame, font=('', 15,), height=1, width=22, text="Start", command=take_photo)
-    start_normal.grid(row=2, sticky=W+E)
-    reset_normal = tk.Button(normal_frame, font=('', 15,), height=1, width=22, text="Reset", command=start_normal_game)
-    reset_normal.grid(row=3, sticky=W+E)
-    back_normal = tk.Button(normal_frame, font=('', 15,), height=1, width=22, text="Back", command=back)
-    back_normal.grid(row=4, sticky=W+E)
+    """ Game screen """
+    # The main image and text on the game screen
+    game_main_img = tk.Label(master=game_frame, width=640, height=480)
+    game_main_img.grid(row=0, columnspan=3, sticky=W+E)
+    game_text_label = tk.Label(master=game_frame, font=('', 20,), text="GET READY", foreground="WHITE", background="RED")
+    game_text_label.grid(row=1, columnspan=3, sticky=W+E)
 
-    """ Unfair screen """
-    # Displays the two game mode buttons on the unfair screen
-    start_unfair = tk.Button(unfair_frame, font=('', 15,), height=1, width=22, text="Start", command=take_photo)
-    start_unfair.grid(row=2, sticky=W+E)
-    reset_unfair = tk.Button(unfair_frame, font=('', 15,), height=1, width=22, text="Reset", command=start_unfair_game)
-    reset_unfair.grid(row=3, sticky=W+E)
-    back_unfair = tk.Button(unfair_frame, font=('', 15,), height=1, width=22, text="Back", command=back)
-    back_unfair.grid(row=4, sticky=W+E)
+    # The start, reset and back buttons on the game screen
+    start = tk.Button(game_frame, font=('', 15,), height=1, width=15, text="Start", command=take_photo)
+    start.grid(row=2, column=0, sticky=W+E)
+    reset = tk.Button(game_frame, font=('', 15,), height=1, width=15, text="Reset", command=start_game)
+    reset.grid(row=2, column=1, sticky=W+E)
+    back = tk.Button(game_frame, font=('', 15,), height=1, width=15, text="Back", command=back)
+    back.grid(row=2, column=2,  sticky=W+E)
 
     main_window.title("RPS")
+
+    # Starts the video
+    show_vid()
 
     # Display the first screen
     main_frame.tkraise()
