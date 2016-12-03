@@ -40,7 +40,7 @@ def take_photo():
 
     # Starts countdown to display rock text on game screen
     # GOTTA START A NEW THREAD TO MAKE ASYNC OR ELSE SLEEPING WILL BLOCK THE MAIN THREAD SHOWING WEBCAM FEED AND IT DIES
-    t = threading.Timer(1.1, display_rock)
+    t = threading.Timer(1, display_rock)
     t.start()
 
 
@@ -50,7 +50,7 @@ def display_rock():
     game_text_label.configure(text="ROCK")
 
     # Starts countdown to display paper text on game screen
-    time.sleep(1.1)
+    time.sleep(1)
     display_paper()
 
 
@@ -61,7 +61,7 @@ def display_paper():
 
     # Starts countdown to display scissors text on game screen
     # and start the classification
-    time.sleep(1.1)
+    time.sleep(1.3)
     stop_video()
 
 
