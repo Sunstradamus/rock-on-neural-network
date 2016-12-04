@@ -1,5 +1,107 @@
 Found 215 images belonging to 3 classes.
 Found 196 images belonging to 3 classes.
+Epoch 1/50
+4s - loss: 1.8977 - val_loss: 1.4361
+Epoch 2/50
+2s - loss: 1.3028 - val_loss: 1.3155
+Epoch 3/50
+2s - loss: 1.0673 - val_loss: 1.2568
+Epoch 4/50
+2s - loss: 1.0252 - val_loss: 1.2767
+Epoch 5/50
+2s - loss: 0.8032 - val_loss: 1.0995
+Epoch 6/50
+2s - loss: 0.8116 - val_loss: 1.1227
+Epoch 7/50
+2s - loss: 0.6606 - val_loss: 1.0396
+Epoch 8/50
+2s - loss: 0.6464 - val_loss: 0.8365
+Epoch 9/50
+2s - loss: 0.6299 - val_loss: 0.8732
+Epoch 10/50
+2s - loss: 0.5400 - val_loss: 0.8745
+Epoch 11/50
+2s - loss: 0.5026 - val_loss: 0.9065
+Epoch 12/50
+2s - loss: 0.4190 - val_loss: 0.8683
+Epoch 13/50
+2s - loss: 0.4758 - val_loss: 0.8304
+Epoch 14/50
+2s - loss: 0.5168 - val_loss: 0.7573
+Epoch 15/50
+2s - loss: 0.4487 - val_loss: 0.7394
+Epoch 16/50
+2s - loss: 0.3789 - val_loss: 0.7702
+Epoch 17/50
+2s - loss: 0.4584 - val_loss: 0.7141
+Epoch 18/50
+2s - loss: 0.3777 - val_loss: 0.6941
+Epoch 19/50
+2s - loss: 0.4077 - val_loss: 0.6388
+Epoch 20/50
+2s - loss: 0.3615 - val_loss: 0.6710
+Epoch 21/50
+2s - loss: 0.3812 - val_loss: 0.6760
+Epoch 22/50
+2s - loss: 0.2862 - val_loss: 0.6286
+Epoch 23/50
+2s - loss: 0.3125 - val_loss: 0.5729
+Epoch 24/50
+2s - loss: 0.2341 - val_loss: 0.5914
+Epoch 25/50
+2s - loss: 0.2667 - val_loss: 0.5906
+Epoch 26/50
+2s - loss: 0.3003 - val_loss: 0.6143
+Epoch 27/50
+2s - loss: 0.2775 - val_loss: 0.5572
+Epoch 28/50
+2s - loss: 0.2716 - val_loss: 0.6125
+Epoch 29/50
+2s - loss: 0.2189 - val_loss: 0.6166
+Epoch 30/50
+2s - loss: 0.2075 - val_loss: 0.6111
+Epoch 31/50
+2s - loss: 0.2522 - val_loss: 0.6294
+Epoch 32/50
+2s - loss: 0.1696 - val_loss: 0.6123
+Epoch 33/50
+2s - loss: 0.1862 - val_loss: 0.6061
+Epoch 34/50
+2s - loss: 0.2655 - val_loss: 0.7242
+Epoch 35/50
+2s - loss: 0.1837 - val_loss: 0.5740
+Epoch 36/50
+2s - loss: 0.2178 - val_loss: 0.7340
+Epoch 37/50
+2s - loss: 0.2047 - val_loss: 0.5360
+Epoch 38/50
+2s - loss: 0.1796 - val_loss: 0.6407
+Epoch 39/50
+2s - loss: 0.1291 - val_loss: 0.6749
+Epoch 40/50
+2s - loss: 0.1538 - val_loss: 0.6631
+Epoch 41/50
+2s - loss: 0.1345 - val_loss: 0.6253
+Epoch 42/50
+2s - loss: 0.1582 - val_loss: 0.6354
+Epoch 43/50
+2s - loss: 0.1524 - val_loss: 0.6544
+Epoch 44/50
+2s - loss: 0.1761 - val_loss: 0.6763
+Epoch 45/50
+2s - loss: 0.1947 - val_loss: 0.7253
+Epoch 46/50
+2s - loss: 0.1531 - val_loss: 0.6980
+Epoch 47/50
+2s - loss: 0.1179 - val_loss: 0.6257
+Epoch 48/50
+2s - loss: 0.1455 - val_loss: 0.7945
+Epoch 49/50
+2s - loss: 0.1338 - val_loss: 0.7408
+Epoch 50/50
+2s - loss: 0.1111 - val_loss: 0.7952
+Found 215 images belonging to 3 classes.
+Found 196 images belonging to 3 classes.
 Epoch 1/300
 4s - loss: 0.1226 - acc: 0.9535 - val_loss: 0.7551 - val_acc: 0.7194
 Epoch 2/300
