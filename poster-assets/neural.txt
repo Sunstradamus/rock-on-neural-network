@@ -20,4 +20,66 @@ for 300 epochs using all 215 training and 196 validation images per epoch. Each 
 made in terms of accuracy and validation accuracy and we can choose the one with the best results are our network of choice.
 
 
-Experiments and Observations
+Experiments and Networks ( these are kinda informal, just writing watever, can take notes)
+
+Baseline
+Starting with the baseline network, which is the network from Assignment 3, the accuracy was around 98% and the validation accuracy was around 78%.
+
+Our problem at the moment is that our validation accuracy is still not that great, so the way to go around improving that is regularization to reduce
+overfitting. The simple way to do this is with dropout layers which sets a fraction of the input units to 0 at each update during training. Our baseline
+network already includes a single dropout layer before the classification layer.
+
+Network1
+Our first network, network1 consisted of replacing the top layer of Inception V3 from the baseline with a GlobalAveragePooling2D layer and
+increasing the dropout to 0.8 to see if that will improve our validation accuracy. In this network, the
+layers that we added were trained first while everything else was frozen, then the last two blocks of Inception V3 were unfrozen and the network
+trained again. SGD(lr=0.0001, momentum=0.9)
+This resulted in a lower accuracy of around 92% but the validation accuracy still stayed the same at around 78% - no improvements were made.
+
+Network2
+Network2 was the same as network1, but this time the last two blocks of Inception V3 and the new layers were all trained at once. This made things worse
+as the accuracy was the same but the validation accuracy dropped down to around 73%.
+
+Network3
+For network3, we decided to add another dropout layer on network2 after the GlobalAveragePooling2D layer with it set at 0.5, just to see if it helps anymore with overfitting. The results were that the accuracy surprisingly
+went up to 99% from 92% and validation accuracy went up from 73% to 78% again. This seemed more promising
+
+Network4
+We saw from network3 that adding another dropout layer made our validation accuracy better, so why not do it again. For network4 we added another dropout
+layer to just before the GlobalAveragePooling2D layer, also with it set to 0.5. This time, the accuracy was still at 99% but the validation accuracy improved again to around 80% - 
+things are improving slowly.
+
+Network5
+For network5, we took network4 but trained it in two steps like in network 1 - the
+layers that we added were trained first while everything else was frozen, then the last two blocks of Inception V3 were unfrozen and the network
+trained again. The accuracy remained at 99% but validation accuracy dropped to around 77%.
+
+Network6
+From network5, it looked like the validation accuracy was oscillating quite a bit around the 77% range, so for network6
+we set the stochastic gradient descent parameters to have a momentum of 0 and a learning rate of 0.01 (SGD(lr=0.01, momentum=0.0))
+This proved to be the most promising so far as accuracy went to 100% and validation accuracy went to 84% - the best so far.
+
+Network7
+From what we learned from network6 is that our validation accuracy varies depending on our stochastic gradient descent parameters.
+It seems like we may be stuck at some local minima in our loss function. For network7 we removed the dropout layer GlobalAveragePooling2D layer.
+This time we tweaked with the hyperparameters even more, setting the learning rate to 0.01, learning rate decay to 1e-6 and momentum to 0.9
+This proved to give the best results that we could get with accuracy of 100% and validation accuracy of 90% - a huge improvement over network6.
+network7 is the best - 177/196 test, 215/215 training
+
+Network8
+This network just readded the dropout layer that was removed in network7.
+Results were that accuracy was 100% and validation accuracy dropped to around 85% - oscillated a lot between 82-90%
+
+Observations
+- lots and lots and lots of overfitting - data set is too small for complex network, classification scores are way too certain when completely wrong
+
+- classification scores for almost all images were 1 for predicted class and 0 for everyuthing else (really steep softmax result?, when wrong it was really wrong (not even close))
+- some networks redundant, little tweaks that made no improvements
+- neural network better than sift
+- small sample data size -> could use data augmentation to increase
+- training acc was almost always 100% for every network, validation accuracy hovered around 80% for most networks, validation accuracy found to oscillate quite a bit around 80-90% range
+
+
+
+
+

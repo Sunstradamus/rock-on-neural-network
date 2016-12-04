@@ -41,12 +41,12 @@ model = Model(input=base_model.input, output=predictions)
 # i.e. freeze all convolutional InceptionV3 layers
 for layer in base_model.layers:
     layer.trainable = False
-
+'''
 # compile the model (should be done *after* setting layers to non-trainable)
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
 # Show some debug output
-#print (model.summary())
+print (model.summary())
 
 #print 'Trainable weights'
 #print model.trainable_weights
@@ -69,11 +69,11 @@ test_generator = test_datagen.flow_from_directory(
 model.fit_generator(
         train_generator,
         samples_per_epoch=215,
-        nb_epoch=50,
+        nb_epoch=15,
         validation_data=test_generator,
         verbose=2,
         nb_val_samples=196)
-
+'''
 
 # at this point, the top layers are well trained and we can start fine-tuning
 # convolutional layers from inception V3. We will freeze the bottom N layers
@@ -121,6 +121,7 @@ model.fit_generator(
         nb_val_samples=196)
 
 model.save_weights('network4.h5')  # always save your weights after training or during training
+
 
 
 
