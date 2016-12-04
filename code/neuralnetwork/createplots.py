@@ -23,10 +23,16 @@ plt.clf()
 for directory in directories:
   plt.plot(train_acc[directory], label=directory)
   plt.legend(loc="best")
+  plt.title('Training Accuracy For Neural Networks')
+  plt.ylabel('Accuracy (%)')
+  plt.xlabel('Epoch')
   plt.savefig('train_acc.png')
 
 plt.clf()
 for directory in directories:
   plt.plot(test_acc[directory], label=directory)
   plt.legend(loc="best")
+  plt.title('Test Accuracy For Neural Networks')
+  plt.ylabel('Accuracy (%)')
+  plt.xlabel('Epoch')
   plt.savefig('test_acc.png')
