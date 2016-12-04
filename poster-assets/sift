@@ -8,7 +8,7 @@ Keypoint descriptors are calculated by sampling regions around keypoint and calc
 Regions are then clustered together to form orientation histograms; orientation vector is then normalized along the largest gradient sample to achieve local rotational invarience
 Keypoints can then be matched based on Euclidean distance of descriptors, allowing for recognition of model objects
 
-
+*Images taken from David Lowe's 2004 paper, Distinctive Image Features from Scale-Invariant Keypoints
 
 
 SIFT on Rock, Paper, Scissors
@@ -16,3 +16,6 @@ SIFT on Rock, Paper, Scissors
 Theory: Hand gestures such as Rock, Paper, and Scissors have salient curvature-based features for SIFT to pick up
 
 Practice: True, but keypoints are few per pose, avg ~10.
+Requires cropped model images, otherwise background keypoints will overwhelm model keypoints
+Brute-force match all test image keypoints against trained keypoints
+Very quick, algorithm capable of real-time matching for our data sets vs neural net
