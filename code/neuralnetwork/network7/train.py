@@ -25,7 +25,7 @@ base_model = InceptionV3(weights='imagenet', include_top=False)
 
 # add a global spatial average pooling layer
 x = base_model.output
-x = GlobalAveragePooling2D()(x) # Try without  this, then try with include_top=True and take flatten layer w/ this
+x = GlobalAveragePooling2D()(x)
 x = Dropout(0.5)(x)
 # let's add a fully-connected layer
 x = Dense(32, activation='relu')(x)
