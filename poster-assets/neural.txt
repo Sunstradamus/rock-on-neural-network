@@ -1,0 +1,23 @@
+Introduction
+In the field of computer vision, machine learning techniques and their applications have recently become popular.
+We wanted to experiment with the effectiveness of convolutional neural networks for the use in classification/object recognition
+over a traditional method such as Scale-invariant feature transform. In our experiments, we apply the use of a convolutional neural
+network in order to classify and recognize the gestures used in the simple game of Rock, Paper, Scissors. This involves training the
+network to be able to classify the input images into one of the 3 classes Rock, Paper, or Scissors.
+
+Approach
+Our approach for building our convolutional neural network is to to start with a baseline network to see what the results we can get from
+the start. From then on we can branch out and tweak with different network structures and hyperparameters to see how far we can improve
+it to get better results. 
+
+We will base our approach by using the pretrained Inception V3 network as the base for what we will build upon
+in a technique called transfer learning. This allows us to take advantage of an already powerful fully trained classification model that
+we can use to retrain for a new set of classes. We can get pretty decent results out of the box this way which will cut down on the amount
+of work needed to train a completely new network from scratch.
+
+Our training data set consists of 215 training images and 196 validation images. For each network that we produce, we will train each one
+for 300 epochs using all 215 training and 196 validation images per epoch. Each network can then be benchmarked to see if improvements were
+made in terms of accuracy and validation accuracy and we can choose the one with the best results are our network of choice.
+
+
+Experiments and Observations

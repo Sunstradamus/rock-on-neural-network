@@ -28,4 +28,5 @@ https://keras.io/optimizers/#usage-of-optimizers
 https://keras.io/applications/
 https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html
 https://4.bp.blogspot.com/-TMOLlkJBxms/Vt3HQXpE2cI/AAAAAAAAA8E/7X7XRFOY6Xo/s1600/image03.png          - inception
+https://www.quora.com/What-is-global-average-pooling
 
