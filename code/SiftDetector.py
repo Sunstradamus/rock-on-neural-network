@@ -6,7 +6,7 @@ import platform
 class SiftDetector(object):
     """docstring for SiftDetector"""
     steps = {'Rock': 0.78, 'Paper': 0.73, 'Scissors': 0.74}
-    ratio = 0.78
+    ratio = 0.76 # 0.78 = without Mori photos, 0.76 with
     train_dir = ""
     train_data = dict()
 
