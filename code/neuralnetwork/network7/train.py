@@ -113,11 +113,11 @@ test_generator = test_datagen.flow_from_directory(
 
 model.fit_generator(
         train_generator,
-        samples_per_epoch=215,
+        samples_per_epoch=222,
         nb_epoch=300,
         validation_data=test_generator,
         verbose=2,
-        nb_val_samples=196)
+        nb_val_samples=203)
 
 model.save_weights('network7.h5')  # always save your weights after training or during training
 
