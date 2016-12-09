@@ -1,9 +1,29 @@
 \section{Performance}
-\label{others}
+\label{performance}
 
-These instructions apply to everyone, regardless of the formatter being used.
+In this section, we discuss the real-world performance obtained by running the SIFT detection algorithm as described in section~\ref{sift} and the neural network as described in section~\ref{neural_network}. We chose a relatively old, mid-range laptop to run the tests on as it was the machine that we intended to use for our demo during the poster session. The laptop was a 2012 Macbook equipped with a <CPU>, <RAM>, <GFX>, running on <MAC OS darwin???>.
 
-\subsection{Citations within the text}
+\subsection{SIFT}
+
+\begin{table}[t]
+\caption{SIFT Ratios Matches}
+\label{sift_ratios}
+\begin{center}
+\begin{tabular}{ll}
+\multicolumn{1}{c}{\bf RATIO}  &\multicolumn{1}{c}{\bf INCORRECT MATCHES}
+\\ \hline \\
+0.50             &111 of 196 \\
+0.60             &105 of 196 \\
+0.70             &100 of 196 \\
+0.72             &95 of 196 \\
+0.74             &95 of 196 \\
+0.76             &91 of 196 \\
+0.78             &94 of 196 \\
+0.80             &98 of 196 \\
+0.90             &102 of 196 \\
+\end{tabular}
+\end{center}
+\end{table}
 
 Citations within the text should be numbered consecutively. The corresponding
 number is to appear enclosed in square brackets, such as [1] or [2]-[5]. The
@@ -56,22 +76,8 @@ either in black/white or in color.
 
 All tables must be centered, neat, clean and legible. Do not use hand-drawn
 tables. The table number and title always appear before the table. See
-Table~\ref{sample-table}.
+Table~\ref{sift_ratios}.
 
 Place one line space before the table title, one line space after the table
 title, and one line space after the table. The table title must be lower case
 (except for first word and proper nouns); tables are numbered consecutively.
-
-\begin{table}[t]
-\caption{Sample table title}
-\label{sample-table}
-\begin{center}
-\begin{tabular}{ll}
-\multicolumn{1}{c}{\bf PART}  &\multicolumn{1}{c}{\bf DESCRIPTION}
-\\ \hline \\
-Dendrite         &Input terminal \\
-Axon             &Output terminal \\
-Soma             &Cell body (contains cell nucleus) \\
-\end{tabular}
-\end{center}
-\end{table}
