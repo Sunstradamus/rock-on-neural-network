@@ -1,33 +1,5 @@
 \section{Neural Network Approach}
 \label{neural_network}
-
-\subsection{Approach}
-
-Our training data consists of 215 training images and 196 validation taken from numerous people doing the Rock, Paper, Scissors gestures using a simple laptop webcam. Our dataset is relatively small compared to what is typical. This was due to the fact that gathering a lot of data requires a lot of time and that securing a lot of hand models was also a challenge. While gathering data, we tried to account for different factors such as hand size, skin color, wrinkles, hair, etc. in order to cover as many cases as we can to get the best results.
-
-Something something backprojection to crop out hands
-
-What we found out from gathering our data was that despite Rock, Paper, Scissors being a simple game, the way people did each gesture tended to vary a whole lot. Rock in general was the most similar across the board as a fist is a fist. The only thing that tended to be different was the angle and orientation of the gesture to the camera as well as the placement of the thumb (on top or to the side).
-
-For paper, there was a ton of variety in the way people did the gesture. Things that differed were whether they had all their fingers together, the way they presented it to the camera, and etc.
-
-\begin{figure}[h]
-\includegraphics[scale=0.8]{paper_image_nn.png}
-\centering
-\caption{Training images of various paper hand gestures}
-\end{figure}
-
-For scissors, the differences were similar to paper. The biggest difference was the orientation and direction.
-
-\begin{figure}[h]
-\includegraphics[scale=0.8]{scissors_image_nn.png}
-\centering
-\caption{Training images of various scissor hand gestures}
-\end{figure}
-
-From looking at this data, it is good that we have accounted for these differences as it may prove to make classifying between Paper and Scissors a challenge.
-\subsection{Neural Network}
-
 Our approach for building our convolutional neural network is to start with a baseline network to see what the results we can get from the start. From then on we can branch out and tweak with different network structures and hyper parameters to see how far we can fine tune and improve it to get better results.
 We will base our approach by using the pre-trained Inception V3 network as the base for what we will build upon in a technique called transfer learning. This allows us to take advantage of an already fully trained powerful classification model that we can use to retrain for a new set of classes. By doing this, we can get pretty decent results out of the box this way which will cut down on the amount of work needed to train a completely new network from scratch as there isn’t enough time or data available. We will be using this pre-trained network in order to extract features for the 3 new Rock, Paper, Scissors classes which will help in classifying them. We will also be fine tuning the weights of the pre-trained network by retraining some of the later layers in the network in order to conform to our dataset as these later layers may contain weights specific to the ImageNet classes.
 
@@ -104,8 +76,5 @@ Results: Accuracy – 100\%, Validation Accuracy – 85\%
 
 The results were similar, but the validation accuracy oscillated a lot between 82-90\%.
 \subsection{Observations}
-\subsection{Neural Network}
 During training, we found out that 300 epochs was usually where the training and validation accuracy would plateau. Beyond that point, the results did not improve significantly. This is probably due to the fact that dataset was simply too small. If we had a lot more data, then our results may have improved some more.
 We also noticed that when our network classified an image wrong, it was usually totally off. For example, the classification score for an image would be 0.99 for Paper when it was actually Scissors. This was the case for a lot of the images that it got wrong. It would be quite certain that an image is of one class, but be off completely. This is most likely due to overfitting as our dataset did not have enough varying examples.
-\subsection{Comparisons of the two methods}
-\subsection{Conclusion}
