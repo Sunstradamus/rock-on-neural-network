@@ -4,6 +4,7 @@
 In this section, we discuss the real-world performance obtained by running the SIFT detection algorithm as described in section~\ref{sift} and the neural network as described in section~\ref{neural_network}. We chose a relatively old, mid-range laptop to run the tests on as it was the machine that we intended to use for our demo during the poster session. The laptop was a 2012 Macbook equipped with a <CPU>, <RAM>, <GFX>, running on <MAC OS darwin???>.
 
 \subsection{SIFT}
+\label{perf_SIFT}
 
 \begin{table}[t]
 \caption{SIFT Ratios Matches}
@@ -37,6 +38,7 @@ The SIFT gesture detector was able to run in real-time, although it only had an 
 We considered altering the dataset to better suit SIFT, but ultimately decided against it as we felt that it would produce a similar adverse effect on the neural network and lacked the time to do so. However, we did attempt to run SIFT using HSV color space, but as mentioned in section \ref{sift}, performance dropped to 2 frames per second as opposed to the original 30.
 
 \subsection{Neural Network}
+\label{perf_NN}
 Out of all the networks, network7 performed the best with 100\% training accuracy and 90\% test accuracy.
 
 \begin{figure}[h]
