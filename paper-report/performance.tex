@@ -25,7 +25,16 @@ In this section, we discuss the real-world performance obtained by running the S
 \end{center}
 \end{table}
 
-[WIP] The SIFT gesture detector was able to run in real-time, although it only had an accuracy of 53.57\%.
+The SIFT gesture detector was able to run in real-time, although it only had an accuracy of 53.57\%. This relatively low accuracy rate is due to using a training set that is unfavorable towards it. The images used were not cropped to contain only the model hand, and occasionally included a noisy background in the form of the subject's shirt. This proved to be problematic as there were occasionally more keypoints generated for the subject's shirt than their hand (Figure~\ref{kp_noise}) and the matching algorithm would consequently find the best match for the shirt than the hand. This contributed towards the low validation accuracy as the validation set shared the same subjects and consequently the same shirts.
+
+\begin{figure}[h]
+\includegraphics[scale=0.35]{kp_noise.png}
+\centering
+\caption{Generated keypoints from one training example. There were more keypoints identified for the text on the clothing than the hand.}
+\label{kp_noise}
+\end{figure}
+
+We considered altering the dataset to better suit SIFT, but ultimately decided against it as we felt that it would produce a similar adverse effect on the neural network and lacked the time to do so. However, we did attempt to run SIFT using HSV color space, but as mentioned in section \ref{sift}, performance dropped to 2 frames per second as opposed to the original 30.
 
 \subsection{Neural Network}
 Out of all the networks, network7 performed the best with 100\% training accuracy and 90\% test accuracy.
