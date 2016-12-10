@@ -11,17 +11,17 @@ Both methods need images of hands doing Rock, Paper, and Scissors to learn what 
 \caption{Training images of various paper hand gestures}
 \end{figure}
 
-\begin{figure}[h]
-\includegraphics[scale=0.8]{scissors_image_nn.png}
-\centering
-\caption{Training images of various scissor hand gestures}
-\end{figure}
+% \begin{figure}[h]
+% \includegraphics[scale=0.8]{scissors_image_nn.png}
+% \centering
+% \caption{Training images of various scissor hand gestures}
+% \end{figure}
 
-\begin{figure}[h]
-\includegraphics[scale=0.8]{rock_image_nn.png}
-\centering
-\caption{Training images of various rock hand gestures}
-\end{figure}
+% \begin{figure}[h]
+% \includegraphics[scale=0.8]{rock_image_nn.png}
+% \centering
+% \caption{Training images of various rock hand gestures}
+% \end{figure}
 
 \subsection{Hand Tracking}
 Because we wanted to asses the possibility of these methods being used on a live video feed, we needed a method to crop the 1280$\times$720 images down to 299$\times$299 images containing as much of the hand as possible. This is basically hand tracking. To do this we used a computer vision algorithm called colour indexing \cite{swain}. This method uses a model of the object to be tracked and records the colour distribution of that model -- its colour histogram. Then, for each image to be analyzed, the likelihood of each of its pixel being part of the model is calculated using the model histogram. This produces a probability image. Finally, we use mean shift to find the most likely location of the hand. The benefit of this method is it's fast and can track a hand regardless of what position the hand is in. One drawback of this method is, since it's basically looking for skin colours, it can easily end up tracking the user's head instead of their hand. To address this, we decided that the camera should face the user's chest so their head is above the top of the view. This reduced the issue, however it still has trouble locating just the hand when the user also has their arm exposed. We used three images of just a hand as our models and were able to track a hand in realtime. 
